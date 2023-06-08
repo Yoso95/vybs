@@ -1,0 +1,108 @@
+.nav-link {
+    text-decoration: none;
+    color: teal;
+    font-size: 16px;
+    line-height: 30px;
+}
+
+#navbar {
+    background-color: #efefef;
+    border-bottom: 1px solid darkslategray;
+    box-shadow: 0px 0px 100px  black;
+}
+
+.transition, ul li i:before, ul li i:after, p {
+        transition: all 0.25s ease-in-out;
+      }
+
+      .flipIn, ul li, h1 {
+        animation: flipdown 0.5s ease both;
+      }
+
+      ul {
+        position: sticky;
+        list-style: none;
+        perspective: 900px;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      ul li:nth-of-type(1) {
+        animation-delay: 0.15s;
+      }
+      ul li:nth-of-type(2) {
+        animation-delay: 0.30s;
+      }
+      ul li:nth-of-type(3) {
+        animation-delay: .45s;
+      }
+      ul li:nth-of-type(4) {
+        animation-delay: .60s;
+      }
+      ul li:nth-of-type(5) {
+        animation-delay: .75s;
+      }
+      ul li:nth-of-type(6) {
+        animation-delay: .90s;
+      }
+      ul li:last-of-type {
+        padding-bottom: 0;
+      }
+
+      @keyframes flipdown {
+        0% {
+          opacity: 0;
+          transform-origin: top;
+          transform: rotateX(-90deg);
+        }
+        5% {
+          opacity: 1;
+        }
+        80% {
+          transform: rotateX(8deg);
+        }
+        83% {
+          transform: rotateX(6deg);
+        }
+        92% {
+          transform: rotateX(-3deg);
+        }
+        100% {
+          transform-origin: top center;
+          transform: rotateX(0deg);
+        }
+      }
+
+.home-page-font {
+  font-family: "Train One", cursive;
+  text-transform: uppercase;
+  background-image: linear-gradient(
+    -225deg,
+    #231557 0%,
+    rgb(65, 48, 185) 15%,
+    #f8548b 30%,
+    #f2ff00 50%,
+    #ff1361 65%,
+    rgb(65, 48, 185) 100%
+  );
+  background-size: auto auto;
+  background-clip: border-box;
+  background-size: 200% auto;
+  color: #fff;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textclip 4s linear infinite;
+  display: inline-block;
+}
+@keyframes textclip {
+  to {
+    background-position: 200% center;
+  }
+}

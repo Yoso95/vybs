@@ -1,0 +1,36 @@
+.create-btn:hover {
+  box-shadow: 0px 0px 10px 2px rgba(128, 0, 128, 1);
+}
+
+.gradient {
+    background: linear-gradient(306deg, #a002ff, #171917);
+    background-size: 400% 400%;
+    height: calc(100vh - 62px);
+    -webkit-animation: AnimationName 20s ease infinite;
+    -moz-animation: AnimationName 20s ease infinite;
+    animation: AnimationName 20s ease infinite;
+    overflow:clip;
+}
+
+@-webkit-keyframes AnimationName {
+    0%{background-position:2% 0%}
+    50%{background-position:99% 100%}
+    100%{background-position:2% 0%}
+}
+@-moz-keyframes AnimationName {
+    0%{background-position:2% 0%}
+    50%{background-position:99% 100%}
+    100%{background-position:2% 0%}
+}
+@keyframes AnimationName {
+    0%{background-position:2% 0%}
+    50%{background-position:99% 100%}
+    100%{background-position:2% 0%}
+}
+
+.move-down {
+    margin-top: 50px;
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+}
