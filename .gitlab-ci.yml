@@ -1,0 +1,88 @@
+stages:
+  - test
+  - build
+  - deploy
+
+# Run flake8 to check for code quality
+lint-test-job:
+  image: python:3-bullseye
+  stage: test
+  script:
+    - pip install flake8
+    - flake8 vybs_service
+
+# Run the unit tests
+api-unit-test-job:
+  image: python:3-bullseye
+  stage: test
+  needs:
+    - lint-test-job
+  script:
+    - cd vybs_service
+    - pip install -r requirements.txt
+    - python -m pytest
+
+# Build the React/JavaScript front-end
+build-front-end-job:
+  stage: build
+  image: node:lts-bullseye
+  needs:
+    - lint-test-job
+    - api-unit-test-job #This is saying that these two jobs must succeed for this build-job to run
+  variables:
+    # If either of these variables is defined in the GitLab
+    # CI/CD variables, that value will override the value here.
+    # You need to substitute in your real values for
+    # GROUP_NAME, PROJECT_NAME, & WEBSERVICE_NAME below.
+    PUBLIC_URL: https://digital-nomads2.gitlab.io/vybs
+    REACT_APP_SAMPLE_SERVICE_API_HOST: https://api.nov-ct-2.mod3projects.com
+
+  script:
+    - cd ghi
+    - npm install
+    - npm run build
+    - cp build/index.html build/404.html
+  artifacts:
+    paths:
+      - ghi/build/
+
+# Deploy the React/JavaScript front-end to GitLab pages
+pages:
+  stage: deploy
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  dependencies:
+    - build-front-end-job
+  needs:
+    - build-front-end-job
+  script:
+    - mv ghi/build/ public
+  artifacts:
+    paths:
+      - public
+
+build-docker-master:
+  image: docker:19.03.1
+  stage: build
+  services:
+    - docker:19.03.1-dind
+  before_script:
+    - export DOCKER_REGISTRY_USER=$CI_REGISTRY_USER
+    - export DOCKER_REGISTRY_PASSWORD=$CI_REGISTRY_PASSWORD
+    - export DOCKER_REGISTRY_URL=$CI_REGISTRY
+    - export COMMIT_HASH=$CI_COMMIT_SHA
+    - export IMAGE_NAME_WITH_REGISTRY_PREFIX=$CI_REGISTRY_IMAGE
+    - docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" $DOCKER_REGISTRY_URL
+
+  script:
+    - cd vybs_service
+    - echo "Building..."
+    - export CONTAINER_FULL_IMAGE_NAME_WITH_TAG=$IMAGE_NAME_WITH_REGISTRY_PREFIX/vybs_service:$COMMIT_HASH
+    - docker build -f ./Dockerfile --pull -t vybs_service .
+    - docker tag vybs_service "$CONTAINER_FULL_IMAGE_NAME_WITH_TAG"
+    - docker push "$CONTAINER_FULL_IMAGE_NAME_WITH_TAG"
+    - echo $CONTAINER_FULL_IMAGE_NAME_WITH_TAG
+    - echo "Deploying on CapRover..."
+    - docker run caprover/cli-caprover:v2.1.1 caprover deploy --caproverUrl $CAPROVER_URL --caproverPassword $CAPROVER_PASSWORD --caproverApp $CAPROVER_APP --imageName $CONTAINER_FULL_IMAGE_NAME_WITH_TAG
+  only:
+    - main
